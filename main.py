@@ -5,8 +5,8 @@ from threading import Event
 
 """
     Title:  TwitchMon
-    Description:  This is a simple twitch monitoring which lets you know if one of your favorite streamers
-    goes live.  You can add streamers in and if they are live, their button will appear in green.
+    Description:  This is a simple twitch monitor which lets you know if one of your favorite streamers
+    goes live.  Their channel name you entered will appear in green under LIVE Channels.
     Author's Twitter:  @ProfitzTV
     Date of Origination:  2022-07-31 | version 0.1
 """
@@ -39,39 +39,6 @@ def is_live(channel_name: str):
         return "live"
     else:
         pass
-
-
-# def build_streamer_service(streamers_list: list):
-#     layout = [
-#         [sg.Text("Currently monitoring:")],
-#         [[sg.Button(n, key=n, visible=False), ] for n in streamers_list],
-#         [sg.Button('Begin', key='-BEGIN-'), sg.Button('Stop', key='-STOPMON-')],
-#     ]
-#
-#     # window = sg.Window("Your Favorite LIVE Streamer Monitor", layout, size=(450, 350), finalize=True)
-#     window = sg.Window("Your Favorite LIVE Streamer Monitor", layout, size=(450, 350))
-#     i_counter = 0
-#
-#     while True:
-#         event, values = window.read()
-#
-#         if event == sg.WIN_CLOSED or event == '-STOPMON-':
-#             break
-#
-#         if event == '-BEGIN-':
-#             while True:
-#                 # Interval before checking again
-#                 run_live_check = heart_beat(streamers_list)
-#
-#                 for streamer in run_live_check:
-#                     window[streamer].update(button_color=('black', 'green'), visible=True)
-#                     window.refresh()
-#
-#         i_counter = i_counter + 1
-#         print("checking status count: ", i_counter)
-#
-#     window.close()
-
 
 def starting_app():
     frame_layout = [
