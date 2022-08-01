@@ -1,0 +1,93 @@
+import PySimpleGUI as sg
+import requests
+
+"""
+    Title:  TwitchMon
+    Description:  This is a simple twitch monitoring which lets you know if one of your favorite streamers
+    goes live.  You can add streamers in and if they are live, their button will appear in green.
+    Author's Twitter:  @ProfitzTV
+    Date of Origination:  2022-07-31 | version 0.1
+"""
+
+# TODO Add in UI to add to this list of favorite streamers (add, update, delete)
+# TODO Add an customizable interval timer where the app doesn't make the window inmoveable/frozen
+streamers = []
+sg.theme('Kayak')
+
+
+def heart_beat(streamer_list1: list):
+    # Queries each streamer in the list to determine if life by using the is_live function
+    chan_status = []
+
+    for name in streamer_list1:
+        checker = is_live(name)
+
+        if checker == "live":
+            chan_status.append(name)
+
+    return chan_status
+
+
+def is_live(channel_name: str):
+    # Scrapes twitch page for chan_live string and returns live if found
+    contents = requests.get('https://www.twitch.tv/' + channel_name).content.decode('utf-8')
+    chan_live = """"isLiveBroadcast":true"""
+    if chan_live in contents:
+        return "live"
+    else:
+        pass
+
+
+def build_streamer_service(streamers_list: list):
+    layout = [
+        [sg.Text("Currently monitoring:")],
+        [[sg.Button(n, key=n, button_color=('black', 'gray'), visible=False), ] for n in streamers_list],
+        [sg.Button('Begin', key='-BEGIN-'), sg.Button('Stop')],
+    ]
+
+    # window = sg.Window("Your Favorite LIVE Streamer Monitor", layout, size=(450, 350), finalize=True)
+    window = sg.Window("Your Favorite LIVE Streamer Monitor", layout, size=(450, 350))
+    i_counter = 0
+    while True:
+        event, values = window.read()
+        if event == sg.WIN_CLOSED or event == 'Stop':
+            break
+
+        if event == '-BEGIN-':
+            # Interval before checking again
+            while True:
+                run_live_check = heart_beat(streamers_list)
+
+                for streamer in run_live_check:
+                    window[streamer].update(button_color=('black', 'green'), visible=True)
+                    window.refresh()
+
+                i_counter = i_counter + 1
+                print("checking status count: ", i_counter)
+
+    window.close()
+
+
+def starting_app():
+    main_layout = [
+        [sg.Text('Enter streamer name:', size=20), sg.Button('Add', key='_ADD_'), sg.InputText()],
+        [sg.Button('Start Monitoring', key='-STARTMON-', visible=True, button_color=('black', 'gray')),
+         sg.Button('Stop')],
+    ]
+
+    # window = sg.Window("Your Favorite LIVE Streamer Monitor", layout, size=(450, 350), finalize=True)
+    main_window = sg.Window("Your Favorite LIVE Streamer Monitor", main_layout, size=(450, 350))
+
+    while True:
+        event2, main_values = main_window.read()
+        if event2 == sg.WIN_CLOSED or event2 == 'Stop':
+            break
+        if event2 == '_ADD_':
+            streamers.append(main_values[0])
+            print("streamers:", streamers)
+        if event2 == '-STARTMON-':
+            build_streamer_service(streamers)
+    main_window.close()
+
+
+starting_app()
