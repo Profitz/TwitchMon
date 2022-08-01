@@ -1,2 +1,2 @@
-backup_
-venv*
+.backup_
+/venv/
