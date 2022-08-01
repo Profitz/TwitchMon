@@ -7,7 +7,8 @@ from threading import Event
     Title:  TwitchMon
     Description:  This is a simple twitch monitor which lets you know if one of your favorite streamers
     goes live.  Their channel name you entered will appear in green under LIVE Channels.
-    Author's Twitter:  @ProfitzTV
+    Twitter:  @ProfitzTV
+    License:  GNU AGPLv3 [https://choosealicense.com/licenses/agpl-3.0/]
     Date of Origination:  2022-07-31 | version 0.1
 """
 
