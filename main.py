@@ -74,9 +74,8 @@ def is_live(channel_name: str):
     # Scrapes twitch page for chan_live string and returns live if found
     contents = requests.get('https://www.twitch.tv/' + channel_name).content.decode('utf-8')
     chan_live = """"isLiveBroadcast":true"""
-    # TODO add in optional for seeing hosted channels
-    chan_hosting = "hosting"
-    if chan_live in contents: # and chan_hosting not in contents:
+    # TODO add in optional for seeing hosted channels - these eventually fall of live query
+    if chan_live in contents:
         return "live"
     else:
         pass

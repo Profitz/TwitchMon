@@ -2,3 +2,5 @@
 .backup_
 .idea/
 twitchmon.exe.spec
+/build/
+/dist/
