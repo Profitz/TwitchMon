@@ -29,7 +29,7 @@ def func(window):
 
 def new_thread(window, event, values):
     global running
-    schedule.every(5).seconds.do(func, window=window)
+    schedule.every(30).seconds.do(func, window=window)
     running = True
     while running:
         schedule.run_pending()
@@ -47,7 +47,8 @@ def stream_mon():
     else:
         window['-STATUSMSG-'].update("Streamers are live.", text_color='green')
         window.refresh()
-    window['-FRAME_LIVE_TEXT-'].update("")
+        window['-FRAME_LIVE_TEXT-'].update("")
+
     for streamer in run_live_check:
         # TODO turn these into URL links
         # TODO add their avatar instead of or beside their name?
@@ -73,7 +74,9 @@ def is_live(channel_name: str):
     # Scrapes twitch page for chan_live string and returns live if found
     contents = requests.get('https://www.twitch.tv/' + channel_name).content.decode('utf-8')
     chan_live = """"isLiveBroadcast":true"""
-    if chan_live in contents:
+    # TODO add in optional for seeing hosted channels
+    chan_hosting = "hosting"
+    if chan_live in contents: # and chan_hosting not in contents:
         return "live"
     else:
         pass
