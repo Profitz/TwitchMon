@@ -1,37 +1,20 @@
-## Welcome to GitHub Pages
+## Welcome to TwitchMon's Project Site
 
-You can use the [editor on GitHub](https://github.com/Profitz/TwitchMon/edit/gh-pages/index.md) to maintain and preview the content for your website in Markdown files.
+The purpose of this Python application is to provide a quick an easy way to see your favorite Twitch streamers without scrolling through a list of them on the site, especially if you follow hundreds/thousands.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+The following image depicts the running application.  You add the streamers you want to monitor for.
+If they are live, you'll  see their name's appear on under the LIVE Channel's frame.
 
-### Markdown
+![TwitchMon](https://i.imgur.com/XuXHQkZ.png)
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+### TODOs:
+As the project evolves, these continually are added/removed.
 
-```markdown
-Syntax highlighted code block
+<li>Add update, delete, clear functionality on streamers list
+<li>Provide a status of what happened during the update
+<li>Turn streamer names into URL links
+<li>Add their avatar instead of/or beside their name
+<li>If button is pressed twice, disable/toggle?
+<li>Make window scalable/resizable and dynamic
+...
 
-# Header 1
-## Header 2
-### Header 3
-
-- Bulleted
-- List
-
-1. Numbered
-2. List
-
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [Basic writing and formatting syntax](https://docs.github.com/en/github/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/Profitz/TwitchMon/settings/pages). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://docs.github.com/categories/github-pages-basics/) or [contact support](https://support.github.com/contact) and we’ll help you sort it out.
