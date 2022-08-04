@@ -1,6 +1,6 @@
-/venv/
+/venv/*
 .backup_
-.idea/
+.idea/*
 twitchmon.exe.spec
-/build/
-/dist/
+/build/*
+/dist/*
