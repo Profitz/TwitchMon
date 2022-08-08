@@ -1,4 +1,6 @@
 import _thread
+import time
+
 import PySimpleGUI as sg
 import requests
 import schedule
@@ -32,6 +34,7 @@ def new_thread(window, event, values):
     schedule.every(30).seconds.do(func, window=window)
     if event == '-STOPMON-':
         running = False
+
     elif event == '-STARTMON-':
         running = True
     while running:
@@ -44,22 +47,26 @@ def stream_mon():
     run_live_check.sort()
     # change button text to Stop Monitoring
     if len(run_live_check) == 0:
-        window['-STATUSMSG-'].update("There are none of your favorite streamers online.", text_color='red')
-        window.refresh()
-    else:
+        window['-STATUSMSG-'].update("None of your favorite streamers are online.", text_color='red')
         window['-FRAME_LIVE_TEXT-'].update("")
         window.refresh()
-
-    for streamer in run_live_check:
-        # TODO turn these into URL links
-        # TODO add their avatar instead of or beside their name?
-        window['-FRAME_LIVE_TEXT-'].update(streamer + "\n", append=True, autoscroll=True, text_color='white', background_color_for_value='green')
-    window.refresh()
+    elif len(run_live_check) >= 1:
+        window['-FRAME_LIVE_TEXT-'].update("")
+        window['-STATUSMSG-'].update("Monitoring live streamers.", text_color='green')
+        window.refresh()
+        for streamer in run_live_check:
+            # TODO turn these into URL links
+            # TODO add their avatar instead of or beside their name?
+            window['-FRAME_LIVE_TEXT-'].update(streamer + "\n", append=True, autoscroll=True, text_color='white', background_color_for_value='green')
+        window.refresh()
+    #print('Sleeping 30 seconds')
+    time.sleep(30)
+    #print('checking status')
 # webbrowser.open('https://www.twitch.tv/' + streamer + '/')
 
 
 def heart_beat(streamer_list1: list):
-    # Queries each streamer in the list to determine if life by using the is_live function
+    # Queries each streamer in the list to determine if live by using the is_live function
     chan_status = []
     for name in streamer_list1:
         checker = is_live(name)
@@ -113,7 +120,7 @@ def starting_app():
                     else:
                         streamers.append(inputtxt)
                         window['-STATUSMSG-'].update("Added: " + inputtxt, text_color='green')
-                        window['-MULTI-'].update(inputtxt+'\n', append=True)
+                        #window['-MULTI-'].update(inputtxt+'\n', append=True)
                         window.refresh()
                         with open('streamers.yaml', 'w') as f:
                             yaml.dump_all(streamers, f, sort_keys=True)
@@ -153,7 +160,7 @@ def starting_app():
 
         # perform STOPMON action
         if event == '-STOPMON-':
-            window['-FRAME_LIVE_TEXT-'].update("")
+            window['-FRAME_LIVE_TEXT-'].update('')
             #window['-LBLIVE-'].update([])
             window['-STATUSMSG-'].update("Monitoring stopped.", text_color='red')
             window['-STOPMON-'].update(disabled=True)
@@ -189,8 +196,9 @@ if __name__ == "__main__":
          sg.Button('Close')],
         [sg.Frame("Status Message", status_frame_layout, key='-STATUSFRAME-', element_justification='left')],
     ]
-    # TODO make window scalable/resizable and dynamic
-    window = sg.Window("Your Favorite LIVE Streamer Monitor", main_layout, size=(450, 360), finalize=True,
+    # TODO make window scalable/resizable and dynamic - maybe using a slider for scaling options? 1-4?
+    # TODO Add in drop-down to select theme color
+    window = sg.Window("Your Favorite LIVE Streamer Monitor v1.0.3", main_layout, size=(428, 360), finalize=True,
                        icon='twitchmon.ico', border_depth=5, keep_on_top=True)  # scaling=True
     i = 0
     threads = []
