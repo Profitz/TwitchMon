@@ -5,7 +5,7 @@ import PySimpleGUI as sg
 import requests
 import schedule
 import yaml
-from yaml.loader import BaseLoader
+from yaml.loader import BaseLoader, SafeLoader
 
 """
     Title:  TwitchMon
@@ -59,10 +59,13 @@ def stream_mon():
             # TODO add their avatar instead of or beside their name?
             window['-FRAME_LIVE_TEXT-'].update(streamer + "\n", append=True, autoscroll=True, text_color='white', background_color_for_value='green')
         window.refresh()
-    #print('Sleeping 30 seconds')
-    time.sleep(30)
-    #print('checking status')
-# webbrowser.open('https://www.twitch.tv/' + streamer + '/')
+    bar_timer = 1
+    #sleep for 30 seconds and update progress bar every second
+    window['-STATUSMSG-'].update("Next check in 30 seconds.", text_color='green')
+    while bar_timer <= 30 and running == True:
+        window['-PROGRESSBAR-'].update_bar(bar_timer)
+        time.sleep(1)
+        bar_timer += 1
 
 
 def heart_beat(streamer_list1: list):
@@ -120,16 +123,21 @@ def starting_app():
                     else:
                         streamers.append(inputtxt)
                         window['-STATUSMSG-'].update("Added: " + inputtxt, text_color='green')
-                        #window['-MULTI-'].update(inputtxt+'\n', append=True)
+                        streamers.sort()
+                        window['-MULTI-'].update("")
+                        for name in streamers:
+                            window['-MULTI-'].update(name+'\n', append=True)
                         window.refresh()
+
                         with open('streamers.yaml', 'w') as f:
-                            yaml.dump_all(streamers, f, sort_keys=True)
+                            yaml.dump_all(streamers, f, sort_keys=True, default_flow_style=False, default_style='"')
                         f.close()
 
                 # perform DELETE action
                 elif combo == 'DELETE':
                     window['-STATUSMSG-'].update("Removed: " + inputtxt, text_color='green')
                     window.refresh()
+
                     # remove streamer from yaml and multi
                     # read in yaml, get the index of the streamer and remove from streamer list
                     with open('streamers.yaml', 'r') as f:
@@ -137,11 +145,15 @@ def starting_app():
                         if inputtxt in data_in_file:
                             index_to_remove = list.index(streamers, inputtxt)
                             streamers.remove(streamers[index_to_remove])
+                            streamers.sort()
+                            window['-MULTI-'].update("")
+                            for n in streamers:
+                                window['-MULTI-'].update(n + '\n', append=True)
                             window.refresh()
                             f.close()
                             # update the yaml streamer file
                             with open('streamers.yaml', 'w') as f2:
-                                yaml.dump_all(streamers, f2, sort_keys=True)
+                                yaml.dump_all(streamers, f2, sort_keys=True, default_style='"')
                                 window.refresh()
                             f2.close()
 
@@ -155,7 +167,10 @@ def starting_app():
         if event == '-STARTMON-':
             window['-STARTMON-'].update(disabled=True)
             window['-STOPMON-'].update(disabled=False)
-            window['-STATUSMSG-'].update("Monitoring started.", text_color='green')
+            #window['-STATUSMSG-'].update("Monitoring started.", text_color='green')
+            window['-PROGRESSBAR-'].update_bar(1)
+            window['-PROGRESSBAR-'].update(visible=True)
+            window.refresh()
             _thread.start_new_thread(new_thread, (window, event, values))
 
         # perform STOPMON action
@@ -165,7 +180,9 @@ def starting_app():
             window['-STATUSMSG-'].update("Monitoring stopped.", text_color='red')
             window['-STOPMON-'].update(disabled=True)
             window['-STARTMON-'].update(disabled=False)
-            # window.refresh()
+            window['-PROGRESSBAR-'].update(visible=False)
+            window['-PROGRESSBAR-'].update_bar(1)
+            window.refresh()
             _thread.start_new_thread(new_thread, (window, event, values))
             continue
 
@@ -175,7 +192,7 @@ def starting_app():
 if __name__ == "__main__":
     # LAYOUT CREATION
     status_frame_layout = [
-        [sg.Text('App started.', key='-STATUSMSG-', size=47, text_color='black', pad=(3, 3))]
+        [sg.Text('App started.', key='-STATUSMSG-', size=47, text_color='black', pad=(3, 3))],
     ]
     status_addremove_layout = [
         [sg.InputText('', size=24, key='-INPUTTXT-'), sg.Combo(['ADD', 'DELETE'], key='-COMBO-', auto_size_text=True, readonly=True, size=18),
@@ -188,18 +205,20 @@ if __name__ == "__main__":
     ]
     main_layout = [
         [sg.Frame("Enter name of streamer then Add/Delete from dropdown.", status_addremove_layout, key='-FRAMEADDREMOVE-', element_justification='right')],
-        [sg.Multiline("", write_only=True, key='-MULTI-', autoscroll=True, size=(25, 11),
+        [sg.Multiline("", write_only=True, key='-MULTI-', autoscroll=False, size=(25, 11),
                       visible=True, disabled=True),
          sg.Frame("LIVE Channels", frame_layout, key='-FRAME-', element_justification='left')],
         [sg.Button('Start Monitoring', key='-STARTMON-', disabled=False, visible=True),
          sg.Button('Stop Monitoring', key='-STOPMON-', disabled=True, visible=True),
          sg.Button('Close')],
         [sg.Frame("Status Message", status_frame_layout, key='-STATUSFRAME-', element_justification='left')],
+        [sg.ProgressBar(max_value=30, key='-PROGRESSBAR-', orientation='horizontal', bar_color=('green', 'gray'), style='default', visible=False, size_px=(428, 5))],
     ]
     # TODO make window scalable/resizable and dynamic - maybe using a slider for scaling options? 1-4?
     # TODO Add in drop-down to select theme color
-    window = sg.Window("Your Favorite LIVE Streamer Monitor v1.0.3", main_layout, size=(428, 360), finalize=True,
-                       icon='twitchmon.ico', border_depth=5, keep_on_top=True)  # scaling=True
+    window = sg.Window("Your Favorite LIVE Streamer Monitor v1.0.4", main_layout, size=(428, 365), finalize=True, #428/360
+                       icon='twitchmon.ico', border_depth=5, keep_on_top=True, resizable=False)  # scaling=True
+
     i = 0
     threads = []
     starting_app()

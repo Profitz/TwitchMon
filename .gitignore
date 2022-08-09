@@ -4,3 +4,4 @@
 twitchmon.exe.spec
 /build/*
 /dist/*
+test_adding.py
